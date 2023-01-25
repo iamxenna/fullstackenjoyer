@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity >=0.7.0 <0.9.0;
+
+import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+
+contract test is ERC20("cmonToken", "CMT") {
+
+    mapping(string => address) loginMap;
+    mapping(address => User) userMap;
+    mapping(address => string) passwordMap;
+    mapping(uint => Review[]) reviewMapping;
+
+    enum Role {
+        User,
+        Vendor,
+        Admin
+    }
+
+    struct User {
+        string login;
+        uint age;
+        Role role;
+    }
+
+    struct Review {
+        uint id;
+        string login;
+        string review;
+        uint mark;        
+    }
+
+    constructor() {
+        loginMap["ivan"] = 0xe220B3C710d95d3fdFf6FDE7230450BA4edbE2Bb;
+        userMap[0xe220B3C710d95d3fdFf6FDE7230450BA4edbE2Bb] = User("ivan", 30, Role.User);
+        passwordMap[0xe220B3C710d95d3fdFf6FDE7230450BA4edbE2Bb] = "123";
+        loginMap["semen"] = 0xA17610436443dD2f08c008F4Acf8e29cB65807aa;
+        userMap[0xA17610436443dD2f08c008F4Acf8e29cB65807aa] = User("asd", 21, Role.Vendor);
+        passwordMap[0xA17610436443dD2f08c008F4Acf8e29cB65807aa] = "123";
+        loginMap["admin"] = 0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec;
+        userMap[0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec] = User("admin", 21, Role.Admin);
+        passwordMap[0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec] = "admin";
+    }
+
+    function registration(string memory _login, string memory _password, uint _age) public {
+        require(loginMap[_login] == address(0), "user already exist");
+        loginMap[_login] = msg.sender;
+        passwordMap[msg.sender] = _password;
+        userMap[msg.sender] = User(_login, _age, Role.User);
+    }
+
+    function auth(string memory _login, string memory _password) public view returns (User memory) {
+        require(keccak256(abi.encode(userMap[loginMap[_login]].login)) == keccak256(abi.encode(_login)), "unknown user");
+        require(keccak256(abi.encode(passwordMap[msg.sender])) == keccak256(abi.encode(_password)), "invalid password");
+        return userMap[loginMap[_login]];
+    }
+
+    function addAdmin(address _address) public accessLevel(Role.Admin) {
+        require(userMap[_address].role != Role.Admin, "admin already exists");
+        userMap[_address].role = Role.Admin;
+    }
+
+    function addComment(uint _shop_id, string memory _review, uint _mark) public {
+        require(_mark <= 10, "rating cantbe more than 10");
+        uint _id = reviewMapping[_shop_id].length + 1;
+        reviewMapping[_shop_id].push(Review(_id, userMap[msg.sender].login, _review, _mark));
+    }
+
+    function getComments(uint _id) public view returns (Review[] memory) {
+        return reviewMapping[_id];
+    }
+
+    modifier accessLevel(Role _role) {
+        require(userMap[msg.sender].role >= _role, "access denied");
+        _;
+    }
+
+
+}
