@@ -4,7 +4,11 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
-contract test is ERC20("cmonToken", "CMT") {
+contract test is ERC20("CustomToken", "CMT") {
+
+    address private _owner;
+
+    uint256 private _tokenPrice = 2 ether;
 
     mapping(string => address) loginMap;
     mapping(address => User) userMap;
@@ -27,19 +31,27 @@ contract test is ERC20("cmonToken", "CMT") {
         uint id;
         string login;
         string review;
-        uint mark;        
+        uint mark;
     }
 
-    constructor() {
-        loginMap["ivan"] = 0xe220B3C710d95d3fdFf6FDE7230450BA4edbE2Bb;
-        userMap[0xe220B3C710d95d3fdFf6FDE7230450BA4edbE2Bb] = User("ivan", 30, Role.User);
-        passwordMap[0xe220B3C710d95d3fdFf6FDE7230450BA4edbE2Bb] = "123";
-        loginMap["semen"] = 0xA17610436443dD2f08c008F4Acf8e29cB65807aa;
-        userMap[0xA17610436443dD2f08c008F4Acf8e29cB65807aa] = User("asd", 21, Role.Vendor);
-        passwordMap[0xA17610436443dD2f08c008F4Acf8e29cB65807aa] = "123";
-        loginMap["admin"] = 0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec;
-        userMap[0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec] = User("admin", 21, Role.Admin);
-        passwordMap[0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec] = "admin";
+    constructor(address _address1, address _address2, address _address3) {
+
+        _owner = msg.sender;
+
+        userMap[_address1] = User("ivan", 30, Role.User);
+        loginMap["ivan"] = _address1;
+        passwordMap[_address1] = "123";
+        userMap[_address2] = User("asd", 21, Role.Vendor);
+        loginMap["asd"] = _address2;
+        passwordMap[_address2] = "123";
+        userMap[_address3] = User("admin", 21, Role.Admin);
+        loginMap["admin"] = _address3;
+        passwordMap[_address3] = "admin";
+
+        _mint(_owner, 1000 * 1 ether);
+        _mint(_address1, 1000 * 1 ether);
+        _mint(_address2, 1000 * 1 ether);
+        _mint(_address3, 1000 * 1 ether);
     }
 
     function registration(string memory _login, string memory _password, uint _age) public {
@@ -70,10 +82,23 @@ contract test is ERC20("cmonToken", "CMT") {
         return reviewMapping[_id];
     }
 
+    function buyToken(uint256 _amount) external payable {
+        uint256 ownerBalance = balanceOf(_owner);
+        _approve(_owner, msg.sender, ownerBalance);
+        payable(_owner).transfer(msg.value);
+        transferFrom(_owner, msg.sender, _amount*10**18);
+    }
+
+    function getTokenPrice() public view returns (uint) {
+        return _tokenPrice;
+    }
+
+    function getBalance() public view returns(uint) {
+        return msg.sender.balance;
+    }
+
     modifier accessLevel(Role _role) {
         require(userMap[msg.sender].role >= _role, "access denied");
         _;
     }
-
-
 }
