@@ -27,6 +27,12 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
     const getComments = async (id: number, address: string) => {
         const data = await Web3Service.getComments(id, address);
         setCommentData(data);
+
+    }
+
+    const purchaseTokens = async (amount: number, address: string, tokenPrice: number) => {
+        const data = await Web3Service.purchaseTokens(amount, address, tokenPrice);
+        console.log(data);
     }
 
     const values = {
@@ -34,7 +40,8 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
         userData,
         logOut,
         getComments,
-        commentData
+        commentData,
+        purchaseTokens
     }
 
     return (

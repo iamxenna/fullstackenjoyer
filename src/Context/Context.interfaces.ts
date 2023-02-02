@@ -6,6 +6,7 @@ interface IValues {
     logOut: () => void;
     getComments(id: number, address: string): void;
     commentData: [];
+    purchaseTokens(amount: number, address: string, tokenPrice: number): Promise<void>;
 }
 
 interface IUserData {
