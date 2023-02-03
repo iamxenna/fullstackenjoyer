@@ -15,6 +15,7 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
 
     const [userData, setUserData] = useState(initialUserData);
     const [commentData, setCommentData] = useState<[]>([]);
+    const [requestData, setRequestData] = useState<[]>([]);
 
     const getUser = (data: IUserData) => {
         setUserData(data);
@@ -27,7 +28,10 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
     const getComments = async (id: number, address: string) => {
         const data = await Web3Service.getComments(id, address);
         setCommentData(data);
+    }
 
+    const getRequestData = async (data: []) => {
+        setRequestData(data);
     }
 
     const purchaseTokens = async (amount: number, address: string, tokenPrice: number) => {
@@ -41,7 +45,9 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
         logOut,
         getComments,
         commentData,
-        purchaseTokens
+        purchaseTokens,
+        getRequestData,
+        requestData
     }
 
     return (

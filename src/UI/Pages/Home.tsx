@@ -8,6 +8,9 @@ import {CommentsList} from "../Components/CommentsList/CommentsList";
 import Web3Service from "../../Services/Web3Service";
 import PurchaseTokenForm from "../Components/PurchaseTokenForm/PurchaseTokenForm";
 import {Button} from "react-bootstrap";
+import {CreateRequestForm} from "../Components/CreateRequestForm/CreateRequestForm";
+import {GetRequestsForm} from "../Components/GetRequestsForm/GetRequestsForm";
+import {RequestList} from "../Components/RequestsList/RequestList";
 
 const Home = () => {
 
@@ -17,6 +20,7 @@ const Home = () => {
     const [tokenBalance, setTokenBalance] = useState<number>(0);
     const [userBalance, setUserBalance] = useState<number>(0);
     const [tokenPrice, setTokenPrice] = useState<number>(0);
+    const [isShowed, setIsShowed] = useState<boolean>(false);
 
     useEffect(() => {
         (async () => {
@@ -30,6 +34,7 @@ const Home = () => {
         setTokenBalance(await Web3Service.balanceOf(userData.address));
         setUserBalance(await Web3Service.getUserBalance(userData.address));
         setTokenPrice(await Web3Service.getTokenPrice());
+        setIsShowed(true);
     }
 
     return (
@@ -44,11 +49,20 @@ const Home = () => {
                                 Age: {userData.age} |
                                 Role: User
                             </h3>
-                            <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
-                            <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
-                            <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
-                            <Button onClick={getBalanceHandler}>
+                            {
+                                isShowed ? (
+                                    <>
+                                        <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
+                                        <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
+                                        <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
+                                    </>
+                                ) : undefined
+                            }
+                            <Button onClick={getBalanceHandler} className={'me-3'}>
                                 Get balance
+                            </Button>
+                            <Button onClick={() => setIsShowed(false)}>
+                                Hide balance
                             </Button>
                         </div>
                         <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>
@@ -56,40 +70,13 @@ const Home = () => {
                                 <AddComment address={userData.address} />
                                 <GetComments address={userData.address} />
                                 <CommentsList/>
-                                <PurchaseTokenForm tokenPrice={tokenPrice} address={userData.address}/>
+                                <PurchaseTokenForm tokenPrice={tokenPrice} address={userData.address} />
+                                <CreateRequestForm address={userData.address} />
                             </div>
                         </div>
                     </>
                 ): undefined
-            }
-            {
-                userData.role === '1' ?
-                (
-                    <>
-                        <div className={'text-center mt-5'}>
-                            <h3>
-                                Login: {userData.login} |
-                                Age: {userData.age} |
-                                Role: Vendor
-                            </h3>
-                            <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
-                            <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
-                            <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
-                            <Button onClick={getBalanceHandler}>
-                                Get balance
-                            </Button>
-                        </div>
-                        <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>
-                            <div className={'d-flex flex-wrap'} style={{maxWidth: '50rem'}}>
-                                <AddComment address={userData.address} />
-                                <GetComments address={userData.address} />
-                                <CommentsList/>
-                                <PurchaseTokenForm tokenPrice={tokenPrice} address={userData.address}/>
-                            </div>
-                        </div>
-                    </>
-                ): undefined
-            }
+            },
             {
                 userData.role === '2' ?
                 (
@@ -114,6 +101,8 @@ const Home = () => {
                                 <GetComments address={userData.address} />
                                 <CommentsList/>
                                 <PurchaseTokenForm tokenPrice={tokenPrice} address={userData.address}/>
+                                <GetRequestsForm address={userData.address} />
+                                <RequestList />
                             </div>
                         </div>
                     </>

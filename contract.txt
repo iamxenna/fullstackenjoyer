@@ -10,15 +10,22 @@ contract test is ERC20("CustomToken", "CMT") {
 
     uint256 private _tokenPrice = 2 ether;
 
-    mapping(string => address) loginMap;
-    mapping(address => User) userMap;
-    mapping(address => string) passwordMap;
-    mapping(uint => Review[]) reviewMapping;
+    mapping(string => address) private loginMap;
+    mapping(address => User) private userMap;
+    mapping(address => string) private passwordMap;
+    mapping(uint => Review[]) private reviewMapping;
+    mapping(address => SellRequest[]) private sellMapping;
 
     enum Role {
         User,
         Vendor,
         Admin
+    }
+
+    enum Status {
+        NotCreated,
+        WaitingForApprove,
+        Approved
     }
 
     struct User {
@@ -32,6 +39,12 @@ contract test is ERC20("CustomToken", "CMT") {
         string login;
         string review;
         uint mark;
+    }
+
+    struct SellRequest {
+        uint tokensAmount;
+        address userAddress;
+        Status status;
     }
 
     constructor(address _address1, address _address2, address _address3) {
@@ -83,8 +96,6 @@ contract test is ERC20("CustomToken", "CMT") {
     }
 
     function buyToken(uint256 _amount) external payable {
-        uint256 ownerBalance = balanceOf(_owner);
-        _approve(_owner, msg.sender, ownerBalance);
         payable(_owner).transfer(msg.value);
         transferFrom(_owner, msg.sender, _amount*10**18);
     }
@@ -95,6 +106,24 @@ contract test is ERC20("CustomToken", "CMT") {
 
     function getBalance() public view returns(uint) {
         return msg.sender.balance;
+    }
+
+    function requestToSell(uint _amount, address _address) public {
+        sellMapping[_address].push(SellRequest(_amount, msg.sender, Status.WaitingForApprove));
+    }
+
+    function getRequests(address _address) public accessLevel(Role.Admin) view returns (SellRequest[] memory) {
+        return sellMapping[_address];
+    }
+
+    function approveRequest(address _address) public payable {
+        sellMapping[_address][0].status = Status.Approved;
+        payable(sellMapping[_address][0].userAddress).transfer(msg.value);
+        transferFrom(sellMapping[_address][0].userAddress, _owner, sellMapping[_address][0].tokensAmount);
+    }
+
+    function putTheToContract() public payable {
+
     }
 
     modifier accessLevel(Role _role) {
