@@ -25,7 +25,8 @@ contract test is ERC20("CustomToken", "CMT") {
     enum Status {
         NotCreated,
         WaitingForApprove,
-        Approved
+        Approved,
+        Canceled
     }
 
     struct User {
@@ -54,7 +55,7 @@ contract test is ERC20("CustomToken", "CMT") {
         userMap[_address1] = User("ivan", 30, Role.User);
         loginMap["ivan"] = _address1;
         passwordMap[_address1] = "123";
-        userMap[_address2] = User("asd", 21, Role.Vendor);
+        userMap[_address2] = User("asd", 21, Role.User);
         loginMap["asd"] = _address2;
         passwordMap[_address2] = "123";
         userMap[_address3] = User("admin", 21, Role.Admin);
@@ -116,10 +117,14 @@ contract test is ERC20("CustomToken", "CMT") {
         return sellMapping[_address];
     }
 
-    function approveRequest(address _address) public payable {
-        sellMapping[_address][0].status = Status.Approved;
-        payable(sellMapping[_address][0].userAddress).transfer(msg.value);
-        transferFrom(sellMapping[_address][0].userAddress, _owner, sellMapping[_address][0].tokensAmount);
+    function approveRequest(address _address, uint256 _id) public payable {
+        payable(_address).transfer(msg.value);
+        transferFrom(_address, _owner, sellMapping[_address][_id].tokensAmount * 10 ** 18);
+        sellMapping[_address][_id].status = Status.Approved;
+    }
+
+    function cancelRequest(address _address, uint256 _id) public {
+        sellMapping[_address][_id].status = Status.Canceled;
     }
 
     function putTheToContract() public payable {

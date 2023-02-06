@@ -66,7 +66,7 @@ const Home = () => {
                             </Button>
                         </div>
                         <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>
-                            <div className={'d-flex flex-wrap'} style={{maxWidth: '50rem'}}>
+                            <div className={'d-flex flex-wrap'} style={{maxWidth: '70rem'}}>
                                 <AddComment address={userData.address} />
                                 <GetComments address={userData.address} />
                                 <CommentsList/>
@@ -76,7 +76,7 @@ const Home = () => {
                         </div>
                     </>
                 ): undefined
-            },
+            }
             {
                 userData.role === '2' ?
                 (
@@ -87,22 +87,31 @@ const Home = () => {
                                 Age: {userData.age} |
                                 Role: Admin
                             </h3>
-                            <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
-                            <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
-                            <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
-                            <Button onClick={getBalanceHandler}>
+                            {
+                                isShowed ? (
+                                    <>
+                                        <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
+                                        <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
+                                        <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
+                                    </>
+                                ) : undefined
+                            }
+                            <Button onClick={getBalanceHandler} className={'me-3'}>
                                 Get balance
+                            </Button>
+                            <Button onClick={() => setIsShowed(false)}>
+                                Hide balance
                             </Button>
                         </div>
                         <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>
-                            <div className={'d-flex flex-wrap'} style={{maxWidth: '50rem'}}>
+                            <div className={'d-flex flex-wrap'} style={{maxWidth: '75rem'}}>
                                 <AddAdmin address={userData.address} />
                                 <AddComment address={userData.address} />
                                 <GetComments address={userData.address} />
-                                <CommentsList/>
                                 <PurchaseTokenForm tokenPrice={tokenPrice} address={userData.address}/>
                                 <GetRequestsForm address={userData.address} />
-                                <RequestList />
+                                <CommentsList/>
+                                <RequestList address={userData.address} tokenPrice={tokenPrice} />
                             </div>
                         </div>
                     </>

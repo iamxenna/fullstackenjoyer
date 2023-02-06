@@ -1,4 +1,4 @@
-import React, {FC, useContext} from 'react';
+import React, {FC} from 'react';
 import {Button, Form} from "react-bootstrap";
 import Web3Service from "../../../Services/Web3Service";
 import {IProps} from "../../../interfaces/Components.interfaces";
