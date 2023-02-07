@@ -1,7 +1,6 @@
 import React, { createContext, FC, useState } from "react";
 import { ContextProps, IUserData, IValues } from "./Context.interfaces";
 import Web3Service from "../Services/Web3Service";
-
 export const Context = createContext({} as IValues);
 
 export const ContextWrapper: FC<ContextProps> = ({children}) => {
@@ -16,6 +15,10 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
     const [userData, setUserData] = useState(initialUserData);
     const [commentData, setCommentData] = useState<[]>([]);
     const [requestData, setRequestData] = useState<[]>([]);
+    const [timer, setTimer] = useState<number>(0);
+    const [localUserBalance, setLocalUserBalance] = useState<number>(0);
+    const [localTokenBalance, setLocalTokenBalance] = useState<number>(0);
+    const [localTokenPrice, setLocalTokenPrice] = useState<number>(0);
 
     const getUser = (data: IUserData) => {
         setUserData(data);
@@ -35,8 +38,21 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
     }
 
     const purchaseTokens = async (amount: number, address: string, tokenPrice: number) => {
-        const data = await Web3Service.purchaseTokens(amount, address, tokenPrice);
+        await Web3Service.purchaseTokens(amount, address, tokenPrice);
+        await getBalance();
+    }
+
+    const setTime = async () => {
+        await Web3Service.getTime(userData.address);
+        const data = await Web3Service.setTime();
         console.log(data);
+        setTimer(data);
+    }
+
+    const getBalance = async () => {
+        setLocalTokenBalance(await Web3Service.balanceOf(userData.address));
+        setLocalUserBalance(await Web3Service.getUserBalance(userData.address));
+        setLocalTokenPrice(await Web3Service.getTokenPrice());
     }
 
     const values = {
@@ -47,7 +63,13 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
         commentData,
         purchaseTokens,
         getRequestData,
-        requestData
+        requestData,
+        timer,
+        setTime,
+        getBalance,
+        localUserBalance,
+        localTokenBalance,
+        localTokenPrice
     }
 
     return (

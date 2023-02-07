@@ -4,7 +4,7 @@ import ABI from './ABI.json';
 class Web3Service{
 
     web3 = new Web3('http://localhost:8545');
-    contract = new this.web3.eth.Contract(ABI as any, '0xF841514865dC2757e271EB2c649D15DEe33AfF10');
+    contract = new this.web3.eth.Contract(ABI as any, '0x663F3ad617193148711d28f5334eE4Ed07016602');
 
     async registerUser(address: string, login: string, password: string, age: number) {
         try {
@@ -89,6 +89,22 @@ class Web3Service{
     async getRequests(userAddress: string, address: string) {
         try {
             return await this.contract.methods.getRequests(userAddress).call({from: address});
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async getTime(address: string) {
+        try {
+            return await this.contract.methods.getTime().send({from: address});
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async setTime() {
+        try {
+            return await this.contract.methods.show().call();
         } catch (e) {
             console.log(e);
         }

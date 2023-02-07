@@ -8,7 +8,17 @@ contract test is ERC20("CustomToken", "CMT") {
 
     address private _owner;
 
-    uint256 private _tokenPrice = 2 ether;
+    uint256 private _tokenPrice = 1 ether;
+
+    uint returnResult;
+
+    uint256 private phase;
+
+    uint private deployTime;
+
+    uint256 private skipedTime;
+
+    uint256 private realTime;
 
     mapping(string => address) private loginMap;
     mapping(address => User) private userMap;
@@ -19,7 +29,8 @@ contract test is ERC20("CustomToken", "CMT") {
     enum Role {
         User,
         Vendor,
-        Admin
+        Admin,
+        White
     }
 
     enum Status {
@@ -66,6 +77,9 @@ contract test is ERC20("CustomToken", "CMT") {
         _mint(_address1, 1000 * 1 ether);
         _mint(_address2, 1000 * 1 ether);
         _mint(_address3, 1000 * 1 ether);
+
+        deployTime = block.timestamp;
+        phase = 2;
     }
 
     function registration(string memory _login, string memory _password, uint _age) public {
@@ -96,9 +110,34 @@ contract test is ERC20("CustomToken", "CMT") {
         return reviewMapping[_id];
     }
 
+    function contractTime() public {
+        realTime = block.timestamp - deployTime;
+    }
+
+    function addTime(uint256 _amount) public {
+        realTime = block.timestamp - deployTime + _amount;
+        skipedTime = _amount;
+    }
+
+    function getTime() public view returns (uint256, uint256, uint256, uint256) {
+        return (phase, deployTime, skipedTime, realTime);
+    }
+
+    function setPhase(uint _phase) public {
+        phase = _phase;
+    }
+
     function buyToken(uint256 _amount) external payable {
-        payable(_owner).transfer(msg.value);
-        transferFrom(_owner, msg.sender, _amount*10**18);
+        if (phase == 2 && userMap[msg.sender].role == Role.White) {
+            _tokenPrice = 1 ether;
+            payable(_owner).transfer(msg.value);
+            transferFrom(_owner, msg.sender, _amount*10**18);
+        }
+        else if (phase == 3 && userMap[msg.sender].role == Role.Admin) {
+            _tokenPrice = 0.5 ether;
+            payable(_owner).transfer(msg.value);
+            transferFrom(_owner, msg.sender, _amount*10**18);
+        }
     }
 
     function getTokenPrice() public view returns (uint) {
@@ -118,12 +157,14 @@ contract test is ERC20("CustomToken", "CMT") {
     }
 
     function approveRequest(address _address, uint256 _id) public payable {
+        require(sellMapping[_address][_id].status == Status.WaitingForApprove, "request is either approved or canceled");
         payable(_address).transfer(msg.value);
         transferFrom(_address, _owner, sellMapping[_address][_id].tokensAmount * 10 ** 18);
         sellMapping[_address][_id].status = Status.Approved;
     }
 
     function cancelRequest(address _address, uint256 _id) public {
+        require(sellMapping[_address][_id].status == Status.WaitingForApprove, "request is either approved or canceled");
         sellMapping[_address][_id].status = Status.Canceled;
     }
 

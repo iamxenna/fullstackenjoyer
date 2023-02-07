@@ -14,28 +14,23 @@ import {RequestList} from "../Components/RequestsList/RequestList";
 
 const Home = () => {
 
-    const { userData } = useContext(Context);
+    const { userData, localUserBalance, localTokenBalance, localTokenPrice } = useContext(Context);
     const navigation = useHistory();
 
     const [tokenBalance, setTokenBalance] = useState<number>(0);
     const [userBalance, setUserBalance] = useState<number>(0);
     const [tokenPrice, setTokenPrice] = useState<number>(0);
-    const [isShowed, setIsShowed] = useState<boolean>(false);
 
     useEffect(() => {
         (async () => {
             if (userData.login === '') {
                 await navigation.push('/login');
             }
+            setTokenBalance(localTokenBalance);
+            setUserBalance(localUserBalance);
+            setTokenPrice(localTokenPrice);
         })()
-    }, [])
-
-    const getBalanceHandler = async () => {
-        setTokenBalance(await Web3Service.balanceOf(userData.address));
-        setUserBalance(await Web3Service.getUserBalance(userData.address));
-        setTokenPrice(await Web3Service.getTokenPrice());
-        setIsShowed(true);
-    }
+    }, [localTokenBalance, localTokenPrice, localUserBalance])
 
     return (
         <div>
@@ -50,20 +45,12 @@ const Home = () => {
                                 Role: User
                             </h3>
                             {
-                                isShowed ? (
-                                    <>
-                                        <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
-                                        <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
-                                        <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
-                                    </>
-                                ) : undefined
+                                <>
+                                    <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
+                                    <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
+                                    <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
+                                </>
                             }
-                            <Button onClick={getBalanceHandler} className={'me-3'}>
-                                Get balance
-                            </Button>
-                            <Button onClick={() => setIsShowed(false)}>
-                                Hide balance
-                            </Button>
                         </div>
                         <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>
                             <div className={'d-flex flex-wrap'} style={{maxWidth: '70rem'}}>
@@ -88,20 +75,12 @@ const Home = () => {
                                 Role: Admin
                             </h3>
                             {
-                                isShowed ? (
-                                    <>
-                                        <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
-                                        <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
-                                        <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
-                                    </>
-                                ) : undefined
+                                <>
+                                    <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
+                                    <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
+                                    <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
+                                </>
                             }
-                            <Button onClick={getBalanceHandler} className={'me-3'}>
-                                Get balance
-                            </Button>
-                            <Button onClick={() => setIsShowed(false)}>
-                                Hide balance
-                            </Button>
                         </div>
                         <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>
                             <div className={'d-flex flex-wrap'} style={{maxWidth: '75rem'}}>

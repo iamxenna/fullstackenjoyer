@@ -9,6 +9,12 @@ interface IValues {
     purchaseTokens(amount: number, address: string, tokenPrice: number): Promise<void>;
     getRequestData(data: []): Promise<void>;
     requestData: [];
+    timer: number;
+    setTime(): Promise<void>;
+    getBalance(): Promise<void>;
+    localUserBalance: number;
+    localTokenBalance: number;
+    localTokenPrice: number;
 }
 
 interface IUserData {
