@@ -15,6 +15,8 @@ interface IValues {
     localUserBalance: number;
     localTokenBalance: number;
     localTokenPrice: number;
+    setUserAllowance(allowance: string): void;
+    allowance: string;
 }
 
 interface IUserData {

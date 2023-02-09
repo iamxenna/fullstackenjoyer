@@ -10,7 +10,12 @@ interface ApproveRequest extends IProps {
 }
 export const RequestList: FC<ApproveRequest> = ({address, tokenPrice}) => {
 
-    const { requestData } = useContext(Context);
+    const [localAllowance, setLocalAllowance] = useState<string>('');
+
+    const {
+        requestData,
+        userData,
+    } = useContext(Context);
 
     const [localRequest, setLocalRequest] = useState<[]>([]);
 
@@ -21,6 +26,15 @@ export const RequestList: FC<ApproveRequest> = ({address, tokenPrice}) => {
     const approveRequestHandler = async (amount: number, userAddress: string, id: number) => {
         const data = await Web3Service.approveRequest(amount, userAddress, tokenPrice, address, id);
         console.log(data)
+    }
+
+    const approveUserHandler = async (userAddress: string) => {
+        const data = await Web3Service.approveUser(userAddress, userData.role);
+        console.log(data)
+        if (data){
+            const allow = await Web3Service.getAllowance(userAddress, userData.role);
+            setLocalAllowance(allow);
+        }
     }
 
     const cancelRequestHandler = async (userAddress: string, id: number) => {
@@ -42,12 +56,27 @@ export const RequestList: FC<ApproveRequest> = ({address, tokenPrice}) => {
                     {
                         status !== "1" ? (
                             <>
-                                <Button
-                                    disabled={true}
-                                    onClick={() => approveRequestHandler(tokensAmount, userAddress, idx)}
-                                >
-                                    Approve
-                                </Button>
+                                {
+                                    localAllowance === "0" ? (
+                                        <>
+                                            <Button
+                                                disabled={true}
+                                                onClick={() => approveUserHandler(address)}
+                                            >
+                                                Approve
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                disabled={true}
+                                                onClick={() => approveRequestHandler(tokensAmount, userAddress, idx)}
+                                            >
+                                                Submit
+                                            </Button>
+                                        </>
+                                    )
+                                }
                                 <Button
                                     className={'m-2'}
                                     disabled={true}
@@ -58,12 +87,27 @@ export const RequestList: FC<ApproveRequest> = ({address, tokenPrice}) => {
                             </>
                         ) : (
                             <>
-                                <Button
-                                    disabled={false}
-                                    onClick={() => approveRequestHandler(tokensAmount, userAddress, idx)}
-                                >
-                                    Approve
-                                </Button>
+                                {
+                                    localAllowance === "0" ? (
+                                        <>
+                                            <Button
+                                                disabled={false}
+                                                onClick={() => approveUserHandler(userAddress)}
+                                            >
+                                                Approve
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                disabled={false}
+                                                onClick={() => approveRequestHandler(tokensAmount, userAddress, idx)}
+                                            >
+                                                Submit
+                                            </Button>
+                                        </>
+                                    )
+                                }
                                 <Button
                                     className={'m-2'}
                                     disabled={false}

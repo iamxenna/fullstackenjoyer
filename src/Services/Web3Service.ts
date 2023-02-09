@@ -4,7 +4,7 @@ import ABI from './ABI.json';
 class Web3Service{
 
     web3 = new Web3('http://localhost:8545');
-    contract = new this.web3.eth.Contract(ABI as any, '0x663F3ad617193148711d28f5334eE4Ed07016602');
+    contract = new this.web3.eth.Contract(ABI as any, '0xb6AC51525dDd092030AEFEbe3ca75e5788379F9b');
 
     async registerUser(address: string, login: string, password: string, age: number) {
         try {
@@ -122,6 +122,56 @@ class Web3Service{
     async cancelRequest(userAddress: string, id: number, address: string) {
         try {
             return await this.contract.methods.cancelRequest(userAddress, id).send({from: address});
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async getAllowance(userAddress: string, userRole: string) {
+        try {
+            if (userRole === "2"){
+                return await this.contract.methods.allowance(userAddress, "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
+                    .call({from: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"});
+            }
+            return await this.contract.methods.allowance("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", userAddress)
+                .call({from: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"});
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async approveUser(userAddress: string, userRole: string) {
+        try {
+            if (userRole === "2"){
+                return await this.contract.methods.approve("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC", userAddress)
+                    .send({from: userAddress});
+            }
+            return await this.contract.methods.approve(userAddress, "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
+                .send({from: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"});
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async contractTime() {
+        try {
+            return await this.contract.methods.contractTime().send({from: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"});
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async getContractTime() {
+        try {
+            return await this.contract.methods.getContractTime().call({from: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"});
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async setPhase(phase: number) {
+        try {
+            return await this.contract.methods.setPhase(phase).send({from: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"});
         } catch (e) {
             console.log(e);
         }

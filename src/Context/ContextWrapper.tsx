@@ -19,6 +19,7 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
     const [localUserBalance, setLocalUserBalance] = useState<number>(0);
     const [localTokenBalance, setLocalTokenBalance] = useState<number>(0);
     const [localTokenPrice, setLocalTokenPrice] = useState<number>(0);
+    const [allowance, setAllowance] = useState<string>('');
 
     const getUser = (data: IUserData) => {
         setUserData(data);
@@ -55,6 +56,11 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
         setLocalTokenPrice(await Web3Service.getTokenPrice());
     }
 
+    const setUserAllowance = (allowance: string) => {
+        setAllowance(allowance);
+        console.log(allowance)
+    }
+
     const values = {
         getUser,
         userData,
@@ -69,7 +75,9 @@ export const ContextWrapper: FC<ContextProps> = ({children}) => {
         getBalance,
         localUserBalance,
         localTokenBalance,
-        localTokenPrice
+        localTokenPrice,
+        setUserAllowance,
+        allowance
     }
 
     return (
