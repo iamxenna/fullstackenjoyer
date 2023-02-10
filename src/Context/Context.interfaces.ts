@@ -17,6 +17,8 @@ interface IValues {
     localTokenPrice: number;
     setUserAllowance(allowance: string): void;
     allowance: string;
+    setContractTime(time: number): void;
+    contractTimer: number;
 }
 
 interface IUserData {

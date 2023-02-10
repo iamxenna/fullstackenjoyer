@@ -10,7 +10,6 @@ import {CreateRequestForm} from "../Components/CreateRequestForm/CreateRequestFo
 import {GetRequestsForm} from "../Components/GetRequestsForm/GetRequestsForm";
 import {RequestList} from "../Components/RequestsList/RequestList";
 import {Button} from "react-bootstrap";
-import Web3Service from "../../Services/Web3Service";
 
 const Home = () => {
 
@@ -20,7 +19,6 @@ const Home = () => {
         localTokenBalance,
         localTokenPrice,
         getBalance,
-        setUserAllowance
     } = useContext(Context);
 
     const navigation = useHistory();
@@ -39,15 +37,6 @@ const Home = () => {
             setTokenPrice(localTokenPrice);
         })()
     }, [localTokenBalance, localTokenPrice, localUserBalance])
-
-    useEffect(() => {
-        (async () => {
-            if (userData.address !== ''){
-                const data = await Web3Service.getAllowance(userData.address, userData.role);
-                setUserAllowance(data);
-            }
-        })()
-    }, [setUserAllowance, userData.address, userData.role])
 
     const getLocalBalance = async () => {
         await getBalance();
@@ -106,11 +95,21 @@ const Home = () => {
                                 Role: Admin
                             </h3>
                             {
-                                <>
-                                    <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
-                                    <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
-                                    <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
-                                </>
+                                localTokenPrice === 0 && localUserBalance === 0 && localTokenBalance === 0 ? (
+                                    <>
+                                        <Button onClick={getLocalBalance}>
+                                            Get balance
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <>
+                                            <h3>Token Balance: {tokenBalance / (10 ** 18)} CMT</h3>
+                                            <h3>User Balance: {userBalance / (10 ** 18)} ETH</h3>
+                                            <h3>Token Price: {tokenPrice / (10 ** 18)} ETH</h3>
+                                        </>
+                                    </>
+                                )
                             }
                         </div>
                         <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>

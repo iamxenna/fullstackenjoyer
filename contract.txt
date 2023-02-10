@@ -153,6 +153,18 @@ contract test is ERC20("CustomToken", "CMT") {
         }
     }
 
+    function tokenPrice() public {
+        if (phase == 2 && userMap[msg.sender].role == Role.White) {
+            _tokenPrice = 1 ether;
+        }
+        else if (phase == 3 && userMap[msg.sender].role == Role.Admin) {
+            _tokenPrice = 0.5 ether;
+        }
+        else {
+            _tokenPrice = 2 ether;
+        }
+    }
+
     function getTokenPrice() public view returns (uint) {
         return _tokenPrice;
     }

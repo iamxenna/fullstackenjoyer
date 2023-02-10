@@ -179,6 +179,29 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "_login",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_password",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_age",
+        "type": "uint256"
+      }
+    ],
+    "name": "registration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_address1",
         "type": "address"
@@ -232,29 +255,6 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_login",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_password",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_age",
-        "type": "uint256"
-      }
-    ],
-    "name": "registration",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -279,6 +279,13 @@
       }
     ],
     "name": "setPhase",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokenPrice",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -515,6 +522,19 @@
   {
     "inputs": [],
     "name": "getContractTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPhase",
     "outputs": [
       {
         "internalType": "uint256",

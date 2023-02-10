@@ -1,39 +1,52 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import {Header} from "../Header/Header";
 import {Footer} from "../Footer/Footer";
 import styles from './style.module.css';
 import Web3Service from "../../../Services/Web3Service";
+import {Context} from "../../../Context/ContextWrapper";
 
 interface ILayout {
     children: React.ReactNode;
 }
 export const Layout: FC<ILayout> = ({children}) => {
 
-    let [time, setTime] = useState<number>(0);
-    const [phase, setPhase] = useState<number>(0);
+    const [localTimer, setLocalTimer] = useState<number>(0);
+    const [phase, setPhase] = useState<number>(2);
+    const [count, setCount] = useState<number>(0);
+
+    const { getBalance } = useContext(Context);
 
     useEffect(() => {
         (async () => {
-            await Web3Service.contractTime();
-            let data = (await Web3Service.getContractTime());
+            if (count === 0) {
+                await Web3Service.contractTime();
+                let data = await Web3Service.getContractTime();
+                setInterval( () => {
+                    setLocalTimer(data++);
+                }, 1000)
+                setCount(1);
+            }
 
-            setInterval( async () => {
-                setTime(data++)
-                if (time >= 680 && time <= 1050 && phase !== 4){
-                    setPhase(4);
-                    const p = await Web3Service.setPhase(4);
-                    console.log(p);
-                }
-            }, 1000)
-            console.log(phase, time)
+            if (localTimer >= 180 && localTimer < 360 && phase !== 3) {
+                setPhase(3);
+                await Web3Service.setPhase(3);
+                await getBalance();
+
+            } else if (localTimer >= 360 && localTimer < 540 && phase !== 4) {
+                setPhase(4);
+                await Web3Service.setPhase(3);
+                await getBalance();
+
+            }
         })()
-    }, [phase])
+    }, [localTimer, phase])
 
     return (
         <>
             <Header/>
                 <div className={styles.wrapper}>
-                    {time}
+                    <h1 className={'text-center mt-5'}>Phase: {phase}</h1>
+                    <h1 className={'text-center'}>Timer: {localTimer}</h1>
                     {children}
                 </div>
             <Footer/>

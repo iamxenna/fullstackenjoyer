@@ -4,7 +4,7 @@ import ABI from './ABI.json';
 class Web3Service{
 
     web3 = new Web3('http://localhost:8545');
-    contract = new this.web3.eth.Contract(ABI as any, '0xb6AC51525dDd092030AEFEbe3ca75e5788379F9b');
+    contract = new this.web3.eth.Contract(ABI as any, '0x02AA3Ae6708682617845A48ea54BFB10B5cc5493');
 
     async registerUser(address: string, login: string, password: string, age: number) {
         try {
@@ -65,6 +65,14 @@ class Web3Service{
     async getTokenPrice() {
         try {
             return await this.contract.methods.getTokenPrice().call();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async tokenPrice(address: string) {
+        try {
+            return await this.contract.methods.tokenPrice().send({from: address});
         } catch (e) {
             console.log(e);
         }
