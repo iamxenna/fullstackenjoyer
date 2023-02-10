@@ -111,8 +111,7 @@ contract test is ERC20("CustomToken", "CMT") {
     }
 
     function contractTime() public {
-        realTime = block.timestamp - deployTime;
-        skipedTime = block.timestamp;
+        realTime = block.timestamp - deployTime + skipedTime;
     }
 
     function getContractTime() public view returns (uint256) {
@@ -120,8 +119,7 @@ contract test is ERC20("CustomToken", "CMT") {
     }
 
     function addTime(uint256 _amount) public {
-        realTime = block.timestamp - deployTime + _amount;
-        skipedTime = _amount;
+        skipedTime += _amount;
     }
 
     function getTime() public view returns (uint256, uint256, uint256, uint256) {
