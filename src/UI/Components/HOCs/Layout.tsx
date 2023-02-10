@@ -14,10 +14,11 @@ export const Layout: FC<ILayout> = ({children}) => {
     const [phase, setPhase] = useState<number>(2);
     const [count, setCount] = useState<number>(0);
 
-    const { getBalance } = useContext(Context);
+    const { getBalance, addedTime } = useContext(Context);
 
     useEffect(() => {
         (async () => {
+
             if (count === 0) {
                 await Web3Service.contractTime();
                 let data = await Web3Service.getContractTime();
@@ -34,12 +35,11 @@ export const Layout: FC<ILayout> = ({children}) => {
 
             } else if (localTimer >= 360 && localTimer < 540 && phase !== 4) {
                 setPhase(4);
-                await Web3Service.setPhase(3);
+                await Web3Service.setPhase(4);
                 await getBalance();
-
             }
         })()
-    }, [localTimer, phase])
+    }, [addedTime, localTimer, phase])
 
     return (
         <>

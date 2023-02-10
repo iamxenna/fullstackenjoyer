@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Context} from "../../Context/ContextWrapper";
 import {useHistory} from "react-router-dom";
 import {AddAdmin} from "../Components/AddAdmin/AddAdmin";
@@ -10,6 +10,7 @@ import {CreateRequestForm} from "../Components/CreateRequestForm/CreateRequestFo
 import {GetRequestsForm} from "../Components/GetRequestsForm/GetRequestsForm";
 import {RequestList} from "../Components/RequestsList/RequestList";
 import {Button} from "react-bootstrap";
+import {AddTimeForm} from "../Components/AddTimeForm/AddTimeForm";
 
 const Home = () => {
 
@@ -114,6 +115,7 @@ const Home = () => {
                         </div>
                         <div className={'mt-5 d-flex justify-content-center'} style={{width: '100%'}}>
                             <div className={'d-flex flex-wrap'} style={{maxWidth: '75rem'}}>
+                                <AddTimeForm address={userData.address}/>
                                 <AddAdmin address={userData.address} />
                                 <AddComment address={userData.address} />
                                 <GetComments address={userData.address} />
